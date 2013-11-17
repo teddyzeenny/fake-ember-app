@@ -30919,8 +30919,10 @@ define("router",
         router.activeTransition.abort();
         wasTransitioning = true;
       }
-
-      var deferred = RSVP.defer(),
+      var transitionLabel = recogHandlers.map(function(item) {
+        return item.handler;
+      });
+      var deferred = RSVP.defer('Router: transition to "' + transitionLabel.join('.') + '"'),
           transition = new Transition(router, deferred.promise);
 
       transition.targetName = targetName;
@@ -31746,7 +31748,7 @@ Ember.Router = Ember.Object.extend(Ember.Evented, {
       if (error.name === "UnrecognizedURLError") {
         Ember.assert("The URL '" + error.message + "' did not match any routes in your application");
       }
-    });
+    }, "Router: Transition complete");
 
     // We want to return the configurable promise object
     // so that callers of this function can use `.method()` on it,

@@ -12,15 +12,33 @@
   <body>
     <script type="text/x-handlebars">
     <h1>Application</h1>
+      {{#link-to "posts.index"}} All Posts {{/link-to}}
+      &nbsp;
+      &nbsp;
+      {{#link-to "slow"}} Slow Route {{/link-to}}
+      &nbsp;
+      &nbsp;
+      {{#link-to "pending"}} Pending Route {{/link-to}}
+
       {{outlet}}
 
     </script>
 
-    <script type="text/x-handlebars" id="index">
-      Index
-    </script>
     <script type="text/x-handlebars" id="posts">
-      Posts
+      <h2>My POSTS</h2>
+      <ul>
+      {{#each}}
+        <li>{{#link-to "post" this}}{{title}}{{/link-to}}</li>
+      {{/each}}
+      </ul>
+      {{outlet}}
     </script>
+
+
+
+    <script type="text/x-handlebars" id="slow">
+      <h2>VERY SLOW MODEL</h2>
+    </script>
+
   </body>
 </html>
