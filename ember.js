@@ -7883,7 +7883,7 @@ define("rsvp/all",
     /* global toString */
 
 
-    function all(promises) {
+    function all(promises, label) {
       if (Object.prototype.toString.call(promises) !== "[object Array]") {
         throw new TypeError('You must pass an array to all.');
       }
@@ -7913,12 +7913,12 @@ define("rsvp/all",
           promise = promises[i];
 
           if (promise && typeof promise.then === 'function') {
-            promise.then(resolver(i), reject);
+            promise.then(resolver(i), reject, "used for RSVP#all");
           } else {
             resolveAll(i, promise);
           }
         }
-      });
+      }, label);
     }
 
 
@@ -8405,8 +8405,8 @@ define("rsvp/promise",
         return thenPromise;
       },
 
-      fail: function(fail) {
-        return this.then(null, fail);
+      fail: function(fail, label) {
+        return this.then(null, fail, label);
       }
     };
 
@@ -8502,7 +8502,6 @@ define("rsvp/resolve",
     var Promise = __dependency1__.Promise;
 
     function resolve(thenable, label) {
-      console.log("RESOLVE", label);
       return new Promise(function(resolve, reject) {
         resolve(thenable);
       }, label);
@@ -15116,8 +15115,8 @@ Ember.PromiseProxyMixin = Ember.Mixin.create({
     }
   }),
 
-  then: function(fulfill, reject) {
-    return get(this, 'promise').then(fulfill, reject);
+  then: function(fulfill, reject, label) {
+    return get(this, 'promise').then(fulfill, reject, label);
   }
 });
 
@@ -29973,8 +29972,8 @@ define("router",
         @param {Function} success
         @param {Function} failure
        */
-      then: function(success, failure) {
-        return this.promise.then(success, failure);
+      then: function(success, failure, label) {
+        return this.promise.then(success, failure, label);
       },
 
       /**
@@ -30944,7 +30943,7 @@ define("router",
 
       log(router, transition.sequence, "Beginning validation for transition to " + transition.targetName);
       validateEntry(transition, matchPointResults.matchPoint, matchPointResults.handlerParams)
-                   .then(transitionSuccess, transitionFailure);
+                   .then(transitionSuccess, transitionFailure, "Router: Transition Success / failure");
 
       return transition;
 
@@ -31126,7 +31125,7 @@ define("router",
 
       transition.trigger(true, 'willResolveModel', transition, handler);
 
-      return RSVP.resolve(null, "Router: start " + handlerName).then(handleAbort, null, "Router: Handle Abort")
+      return RSVP.resolve(null, "Router: start route: " + handlerName).then(handleAbort, null, "Router: Handle Abort")
                            .then(beforeModel, null, "Router: before model")
                            .then(handleAbort, null, "Router: Handle Abort")
                            .then(model, null, "Router: Model")

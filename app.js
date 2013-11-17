@@ -14,7 +14,7 @@ App.IndexRoute = Ember.Route.extend({
   }
 });
 
-App.PostRoute = Ember.Route.extend({
+App.PostsRoute = Ember.Route.extend({
   setupController: function() {
     var p = new Ember.RSVP.resolve('[<App.User:1>, <App.User:2>]', "Find Users");
     p.then(function() {
@@ -22,3 +22,4 @@ App.PostRoute = Ember.Route.extend({
     }, null, "Find Comments");
   }
 });
+
