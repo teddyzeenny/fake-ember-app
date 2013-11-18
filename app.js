@@ -10,49 +10,32 @@ $(function() {
 
 
 App.Router.map(function() {
-  // this.route('posts');
-  this.resource('posts', { path: '/'} , function() {
-    this.resource('post', { path: '/post/:post_id'} );
-  });
+  this.resource('normal', { path: '/'});
+  this.route('reject');
   this.route('pending');
   this.route('slow');
 });
 
-App.ApplicationAdapter = DS.FixtureAdapter.extend();
 
-
-App.Post = DS.Model.extend({
-  title: DS.attr(),
-  bodty: DS.attr()
-});
-
-App.Post.reopenClass({
-  FIXTURES: [
-    { id: 1, title: 'My first post', body: 'This is the body' },
-    { id: 2, title: 'Second post', body: 'This is the second body'}
-  ]
-});
-
-App.ApplicationRoute = Ember.Route.extend();
-
-App.PostsRoute = Ember.Route.extend({
+App.NormalRoute = Ember.Route.extend({
   model: function() {
-    return this.store.find('post');
+    return new Ember.RSVP.Promise(function(resolve) {
+      Ember.run.later(function() {
+        resolve([Ember.Object.create({title: "title"})]);
+      }, 500);
+    });
   }
 });
 
 App.PostsView = Em.View.extend({classNames: ['posts']});
 App.PostView = Em.View.extend({classNames: ['post']});
 
-App.PostRoute = Ember.Route.extend({
-  setupController: function() {
+App.RejectRoute = Ember.Route.extend({
+  model: function() {
     var p = new Ember.RSVP.resolve('[<App.User:1>, <App.User:2>]', "Find Users");
-    p.then(function() {
+    return p.then(function() {
       throw "HTTP STATUS 404 - NOT FOUND";
     }, null, "Find Comments");
-
-
-    return this._super.apply(this, arguments);
   }
 });
 

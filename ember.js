@@ -8486,10 +8486,10 @@ define("rsvp/reject",
     "use strict";
     var Promise = __dependency1__.Promise;
 
-    function reject(reason) {
+    function reject(reason, label) {
       return new Promise(function (resolve, reject) {
         reject(reason);
-      });
+      }, label);
     }
 
 
@@ -31150,7 +31150,7 @@ define("router",
         if (reason instanceof Router.TransitionAborted) {
           // if the transition was aborted and *no additional* error was thrown,
           // reject with the Router.TransitionAborted instance
-          return RSVP.reject(reason);
+          return RSVP.reject(reason, "Transition Aborted");
         }
 
         // otherwise, we're here because of a different error
@@ -31163,7 +31163,7 @@ define("router",
         transition.trigger(true, 'error', reason, transition, handlerInfo.handler);
 
         // Propagate the original error.
-        return RSVP.reject(reason);
+        return RSVP.reject(reason, "Transition failed");
       }
 
       function beforeModel() {

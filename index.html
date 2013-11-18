@@ -12,29 +12,28 @@
   <body>
     <script type="text/x-handlebars">
     <h1>Application</h1>
-      {{#link-to "posts.index"}} All Posts {{/link-to}}
-      &nbsp;
-      &nbsp;
-      {{#link-to "slow"}} Slow Route {{/link-to}}
-      &nbsp;
-      &nbsp;
-      {{#link-to "pending"}} Pending Route {{/link-to}}
-
-      {{outlet}}
-
-    </script>
-
-    <script type="text/x-handlebars" id="posts">
-      <h2>My POSTS</h2>
       <ul>
-      {{#each}}
-        <li>{{#link-to "post" this}}{{title}}{{/link-to}}</li>
-      {{/each}}
+
+      <li>{{#link-to "normal"}} Normal Route {{/link-to}}</li>
+      <li>{{#link-to "slow"}} Slow Route {{/link-to}}</li>
+      <li>{{#link-to "pending"}} Hanging Route (does not resolve) {{/link-to}}</li>
+      <li>{{#link-to "reject"}} Rejecting Route {{/link-to}}</li>
       </ul>
+      <br />
       {{outlet}}
     </script>
 
+    <script type="text/x-handlebars" id="normal">
+      NORMAL ROUTE
+    </script>
 
+    <script type="text/x-handlebars" id="loading">
+      LOADING...
+    </script>
+
+    <script type="text/x-handlebars" id="error">
+      ERROR
+    </script>
 
     <script type="text/x-handlebars" id="slow">
       <h2>VERY SLOW MODEL</h2>
