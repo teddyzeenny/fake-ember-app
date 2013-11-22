@@ -7874,7 +7874,6 @@ Ember Metal
 
 })();
 
-(function() {
 define("rsvp/all",
   ["rsvp/promise","exports"],
   function(__dependency1__, __exports__) {
@@ -7913,7 +7912,7 @@ define("rsvp/all",
           promise = promises[i];
 
           if (promise && typeof promise.then === 'function') {
-            promise.then(resolver(i), reject, "used for RSVP#all");
+            promise.then(resolver(i), reject, "RSVP: RSVP#all");
           } else {
             resolveAll(i, promise);
           }
@@ -8154,8 +8153,8 @@ define("rsvp/hash",
       return s;
     }
 
-    function hash(promises) {
-      var results = {}, deferred = defer(), remaining = size(promises);
+    function hash(promises, label) {
+      var results = {}, deferred = defer(label), remaining = size(promises);
 
       if (remaining === 0) {
         deferred.resolve({});
@@ -8180,7 +8179,7 @@ define("rsvp/hash",
 
       for (var prop in promises) {
         if (promises[prop] && typeof promises[prop].then === 'function') {
-          promises[prop].then(resolver(prop), rejectAll);
+          promises[prop].then(resolver(prop), rejectAll, "RSVP: RSVP#hash");
         } else {
           resolveAll(prop, promises[prop]);
         }
@@ -8312,8 +8311,7 @@ define("rsvp/promise",
       this.constructor.trigger('created', {
         guid: this._guid,
         eventName: 'created',
-        label: this._label,
-        promise: this
+        label: this._label
       });
 
       try {
@@ -8539,8 +8537,6 @@ define("rsvp",
     __exports__.resolve = resolve;
     __exports__.reject = reject;
   });
-
-})();
 
 (function() {
 /**
