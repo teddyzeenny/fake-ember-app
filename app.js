@@ -16,19 +16,23 @@ App.Router.map(function() {
   this.route('slow');
 });
 
+App.Store = DS.Store.extend();
+App.ApplicationAdapter = DS.FixtureAdapter;
+
+App.Normal = DS.Model.extend({
+  title: DS.attr()
+});
+
+App.Normal.FIXTURES = [
+  { id: 1, title: 'first record' },
+  { id: 2, title: 'second record' }
+];
 
 App.NormalRoute = Ember.Route.extend({
   model: function() {
-    return new Ember.RSVP.Promise(function(resolve) {
-      Ember.run.later(function() {
-        resolve([Ember.Object.create({title: "title"})]);
-      }, 500);
-    });
+    return this.store.find('normal');
   }
 });
-
-App.PostsView = Em.View.extend({classNames: ['posts']});
-App.PostView = Em.View.extend({classNames: ['post']});
 
 App.RejectRoute = Ember.Route.extend({
   model: function() {
