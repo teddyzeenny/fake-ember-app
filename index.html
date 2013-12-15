@@ -18,6 +18,7 @@
       <li>{{#link-to "slow"}} Slow Route {{/link-to}}</li>
       <li>{{#link-to "pending"}} Hanging Route (does not resolve) {{/link-to}}</li>
       <li>{{#link-to "reject"}} Rejecting Route {{/link-to}}</li>
+      <li>{{#link-to "ember_data"}} Ember Data Promises {{/link-to}}</li>
       </ul>
       <br />
       {{outlet}}
@@ -38,6 +39,23 @@
     <script type="text/x-handlebars" id="slow">
       <h2>VERY SLOW MODEL</h2>
     </script>
+
+    <script type="text/x-handlebars" id="ember_data">
+      <h2>Ember Data</h2>
+
+      <button {{action "findAll"}}>findAll</button>
+      <button {{action "findById"}}>findById</button>
+      <button {{action "findQuery"}}>findQuery</button>
+      <button {{action "createRecord"}}>createRecord</button>
+      <button {{action "updateRecord"}}>updateRecord</button>
+      <button {{action "destroyRecord"}}>destroyRecord</button>
+      <button {{action "saveRecordArray"}}>saveRecordArray</button>
+      <button {{action "asyncBelongsTo"}}>async belongsTo</button>
+      <button {{action "asyncHasMany"}}>async hasMany</button>
+      <button {{action "reload"}}>reload</button>
+      <button {{action "manyArrayFetch"}}>ManyArray#fetch</button>
+    </script>
+
 
   </body>
 </html>

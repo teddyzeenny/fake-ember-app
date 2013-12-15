@@ -14,23 +14,14 @@ App.Router.map(function() {
   this.route('reject');
   this.route('pending');
   this.route('slow');
+  this.route('ember_data');
 });
 
-App.Store = DS.Store.extend();
-App.ApplicationAdapter = DS.FixtureAdapter;
 
-App.Normal = DS.Model.extend({
-  title: DS.attr()
-});
-
-App.Normal.FIXTURES = [
-  { id: 1, title: 'first record' },
-  { id: 2, title: 'second record' }
-];
 
 App.NormalRoute = Ember.Route.extend({
   model: function() {
-    return this.store.find('normal');
+    return { some: 'model' };
   }
 });
 
@@ -69,3 +60,105 @@ App.SlowRoute = Ember.Route.extend({
 
 });
 
+
+
+
+App.EmberDataController = Ember.Controller.extend({
+  fetchRecordArray: function() {
+    var self = this;
+    this.store.find('post', {}).then(function(records) {
+      self.set('recordArray', records);
+    });
+  }.on('init'),
+  fetchRecord: function() {
+    var self = this;
+    this.store.find('post', 1).then(function(record) {
+      self.set('record', record);
+      record.get('comments').then(function(comments) {
+        self.set('commentsManyArray', comments);
+      }); // prefetch
+    });
+  }.on('init'),
+  fetchComment: function() {
+    var self = this;
+    this.store.find('comment', 1).then(function(record) {
+      self.set('comment', record);
+    });
+  }.on('init'),
+
+  actions:  {
+    findAll: function() {
+      this.store.find('post');
+    },
+    findById: function() {
+      this.store.find('post', 1);
+    },
+    findQuery: function() {
+      this.store.find('post', { some: 'query' });
+    },
+    createRecord: function() {
+      this.store.createRecord('post').save();
+    },
+    updateRecord: function() {
+      this.get('record').save();
+    },
+    destroyRecord: function() {
+      var comment = this.store.push('comment', {
+        id: Ember.generateGuid(),
+        title: "Comment To Destroy"
+      });
+      comment.destroyRecord();
+    },
+    saveRecordArray: function() {
+      this.get('recordArray').save();
+    },
+    asyncBelongsTo: function() {
+      Ember.propertyDidChange(this.get('comment'), 'post');
+      this.get('comment.post');
+    },
+    asyncHasMany: function() {
+      Ember.propertyDidChange(this.get('record'), 'comments');
+      this.get('record.comments');
+    },
+    reload: function() {
+      this.get('record').reload();
+    },
+    manyArrayFetch: function() {
+      this.get('commentsManyArray').fetch();
+    }
+  }
+});
+
+
+App.Store = DS.Store.extend();
+
+App.ApplicationAdapter = DS.FixtureAdapter.extend({
+  queryFixtures: function(fixtures) {
+    return fixtures;
+  }
+});
+
+App.Post = DS.Model.extend({
+  title: DS.attr('string'),
+  comments: DS.hasMany('comment', { async: true } )
+});
+
+App.Comment = DS.Model.extend({
+  title: DS.attr('string'),
+  post: DS.belongsTo('post', { async: true } )
+});
+
+App.Post.reopenClass({
+  FIXTURES: [
+  { id: 1, title: 'Post 1', comments: [1,2]},
+  { id: 2, title: 'Post 2', comments: [3] }
+  ]
+});
+
+App.Comment.reopenClass({
+  FIXTURES: [
+  { id: 1, title: 'Comment 1', post: 1 },
+  { id: 2, title: 'Comment 2', post: 1 },
+  { id: 3, title: 'Comment 3', post: 2 }
+  ]
+});
