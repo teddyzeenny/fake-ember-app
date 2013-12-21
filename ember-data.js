@@ -6,7 +6,7 @@
  */
 
 
- // Version: 1.0.0-beta.4+canary.5c13ea34
+ // Version: 1.0.0-beta.4+canary.4aef8238
 
 (function() {
 var define, requireModule;
@@ -61,7 +61,7 @@ var define, requireModule;
 var DS;
 if ('undefined' === typeof DS) {
   DS = Ember.Namespace.create({
-    VERSION: '1.0.0-beta.4+canary.5c13ea34'
+    VERSION: '1.0.0-beta.4+canary.4aef8238'
   });
 
   if ('undefined' !== typeof window) {
@@ -720,7 +720,7 @@ DS.RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
       return Ember.A(array);
     }, null, "DS: RecordArray#save apply Ember.NativeArray");
 
-    return DS.PromiseArray.create({ promiseLabel: promiseLabel, promise: promise });
+    return DS.PromiseArray.create({ promise: promise });
   }
 });
 
@@ -1497,8 +1497,8 @@ DS.Store = Ember.Object.extend(DS._Mappable, {
 
     var record = this.recordForId(type, id);
 
-    var promise = this.fetchRecord(record) || resolve(record);
-    return promiseObject(promise, "DS: Store#findById " + type + " with id: " + id);
+    var promise = this.fetchRecord(record) || resolve(record, "DS: Store#findById " + type + " with id: " + id);
+    return promiseObject(promise);
   },
 
   /**
@@ -1515,7 +1515,7 @@ DS.Store = Ember.Object.extend(DS._Mappable, {
     var promiseLabel = "DS: Store#findByIds " + type;
     return promiseArray(Ember.RSVP.all(map(ids, function(id) {
       return store.findById(type, id);
-    })).then(Ember.A, null, "DS: Store#findByIds of " + type + " complete"), promiseLabel);
+    })).then(Ember.A, null, "DS: Store#findByIds of " + type + " complete"));
   },
 
   /**
@@ -1786,7 +1786,7 @@ DS.Store = Ember.Object.extend(DS._Mappable, {
 
     resolver.resolve(_findQuery(adapter, this, type, query, array));
 
-    return promiseArray(resolver.promise, promiseLabel);
+    return promiseArray(resolver.promise);
   },
 
   /**
@@ -1824,7 +1824,7 @@ DS.Store = Ember.Object.extend(DS._Mappable, {
 
     resolver.resolve(_findAll(adapter, this, type, sinceToken));
 
-    return promiseArray(resolver.promise, "DS: Store#fetchAll");
+    return promiseArray(resolver.promise);
   },
 
   /**
@@ -2580,12 +2580,12 @@ function addUnsavedRecords(record, key, data) {
 DS.PromiseArray = Ember.ArrayProxy.extend(Ember.PromiseProxyMixin);
 DS.PromiseObject = Ember.ObjectProxy.extend(Ember.PromiseProxyMixin);
 
-function promiseObject(promise, label) {
-  return DS.PromiseObject.create({ promiseLabel: label, promise: promise });
+function promiseObject(promise) {
+  return DS.PromiseObject.create({ promise: promise });
 }
 
-function promiseArray(promise, label) {
-  return DS.PromiseArray.create({ promiseLabel: label, promise: promise });
+function promiseArray(promise) {
+  return DS.PromiseArray.create({ promise: promise });
 }
 
 function isThenable(object) {
@@ -3893,7 +3893,7 @@ DS.Model = Ember.Object.extend(Ember.Evented, {
     this._inFlightAttributes = this._attributes;
     this._attributes = {};
 
-    return DS.PromiseObject.create({ promiseLabel: promiseLabel, promise: resolver.promise });
+    return DS.PromiseObject.create({ promise: resolver.promise });
   },
 
   /**
@@ -3922,7 +3922,7 @@ DS.Model = Ember.Object.extend(Ember.Evented, {
       throw reason;
     }, "DS: Model#reload complete, update flags");
 
-    return DS.PromiseObject.create({ promiseLabel: promiseLabel, promise: promise });
+    return DS.PromiseObject.create({ promise: promise });
   },
 
   // FOR USE DURING COMMIT PROCESS
@@ -4840,11 +4840,11 @@ function asyncBelongsTo(type, options, meta) {
   return Ember.computed(function(key, value) {
     var data = get(this, 'data'),
         store = get(this, 'store'),
-        promiseLabel = "DS: Async belongsTo " + this + " : " + key;;
+        promiseLabel = "DS: Async belongsTo " + this + " : " + key;
 
     if (arguments.length === 2) {
       Ember.assert("You can only add a '" + type + "' record to this relationship", !value || value instanceof store.modelFor(type));
-      return value === undefined ? null : DS.PromiseObject.create({ promiseLabel: promiseLabel, promise: Ember.RSVP.resolve(value, promiseLabel) });
+      return value === undefined ? null : DS.PromiseObject.create({ promise: Ember.RSVP.resolve(value, promiseLabel) });
     }
 
     var link = data.links && data.links[key],
@@ -4852,11 +4852,11 @@ function asyncBelongsTo(type, options, meta) {
 
     if(!isNone(belongsTo)) {
       var promise = store.fetchRecord(belongsTo) || Ember.RSVP.resolve(belongsTo, promiseLabel);
-      return DS.PromiseObject.create({ promiseLabel: promiseLabel, promise: promise});
+      return DS.PromiseObject.create({ promise: promise});
     } else if (link) {
       var resolver = Ember.RSVP.defer("DS: Async belongsTo (link) " + this + " : " + key);
       store.findBelongsTo(this, link, meta, resolver);
-      return DS.PromiseObject.create({ promiseLabel: promiseLabel, promise: resolver.promise });
+      return DS.PromiseObject.create({ promise: resolver.promise });
     } else {
       return null;
     }
@@ -4995,7 +4995,7 @@ function asyncHasMany(type, options, meta) {
       return relationship;
     }, null, "DS: Async hasMany records received");
 
-    return DS.PromiseArray.create({ promiseLabel: promiseLabel, promise: promise });
+    return DS.PromiseArray.create({ promise: promise });
   }).property('data').meta(meta);
 }
 
