@@ -18,6 +18,31 @@ App.Router.map(function() {
 });
 
 
+App.ApplicationRoute = Ember.Route.extend({
+  actions: {
+    lazyChain: function() {
+      var firstPromise = new Ember.RSVP.Promise(function(resolve) {
+
+      }, "First Promise");
+
+      var secondPromise = new Ember.RSVP.Promise(function(resolve) {
+        resolve();
+      }, "Second Promise");
+
+      Ember.run.later(function() {
+        var then = firstPromise.then(function() {
+
+        }, null, 'First promise lazy chain');
+
+        Ember.run.later(function() {
+          then.then(function() {
+
+          }, null, "First promise second chain")
+        }, 1000);
+      }, 1000);
+    }
+  }
+});
 
 App.NormalRoute = Ember.Route.extend({
   model: function() {
