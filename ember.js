@@ -8746,7 +8746,8 @@ define("rsvp/instrument",
           detail: promise._detail,
           childGuid: child && promise._guidKey + child._id,
           label: promise._label,
-          timeStamp: now()
+          timeStamp: now(),
+          stack: new Error(promise._label).stack
         });
       } catch(error) {
         setTimeout(function(){
@@ -17105,6 +17106,7 @@ var get = Ember.get;
   @namespace Ember
  */
 Ember.DeferredMixin = Ember.Mixin.create({
+  promiseLabel: undefined,
   /**
     Add handlers to be called when the Deferred object is resolved or rejected.
 
@@ -17112,7 +17114,7 @@ Ember.DeferredMixin = Ember.Mixin.create({
     @param {Function} resolve a callback function to be called when done
     @param {Function} reject  a callback function to be called when failed
   */
-  then: function(resolve, reject) {
+  then: function(resolve, reject, label) {
     var deferred, promise, entity;
 
     entity = this;
@@ -17158,7 +17160,7 @@ Ember.DeferredMixin = Ember.Mixin.create({
   },
 
   _deferred: Ember.computed(function() {
-    return RSVP.defer();
+    return RSVP.defer('Ember: DeferredMixin - ' + this);
   })
 });
 
