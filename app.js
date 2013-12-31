@@ -1,12 +1,12 @@
 var App = window.App = Ember.Application.create();
 
-App.deferReadiness();
+// App.deferReadiness();
 
-$(function() {
-  Ember.run.later(function() {
-    App.advanceReadiness();
-  }, 500);
-});
+// $(function() {
+//   Ember.run.later(function() {
+//     App.advanceReadiness();
+//   }, 500);
+// });
 
 
 App.Router.map(function() {
@@ -54,7 +54,7 @@ App.RejectRoute = Ember.Route.extend({
   model: function() {
     var p = new Ember.RSVP.resolve('[<App.User:1>, <App.User:2>]', "Find Users");
     return p.then(function() {
-      throw "HTTP STATUS 404 - NOT FOUND";
+      throw new Error("HTTP STATUS 404 - NOT FOUND");
     }, null, "Find Comments");
   }
 });
@@ -116,7 +116,15 @@ App.EmberDataController = Ember.Controller.extend({
       this.store.find('post');
     },
     findById: function() {
-      this.store.find('post', 1);
+      var A = function() {};
+      this.store.find('post', 1).then(function(post) {
+        post.set('title', Ember.Object.create({
+          title: 'bla',
+          a: function() {
+            return 'huh?';
+          }
+        }));
+      });
     },
     findQuery: function() {
       this.store.find('post', { some: 'query' });
