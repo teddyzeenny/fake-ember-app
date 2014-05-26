@@ -17,3 +17,12 @@ App.IndexController = Ember.Controller.extend({
     return a;
   }.property()
 });
+
+
+App.IndexView = Ember.View.extend({
+
+});
+
+App.ApplicationView = Ember.View.extend({
+
+});

@@ -16,11 +16,15 @@
       {{outlet}}
     </script>
 
+    <script type="text/x-handlebars" id="users">
+      {{#each user in users}}
+
+      {{/each}}
+    </script>
+
     <script type="text/x-handlebars" id="index">
     {{#if isActive}}
-      {{!#each items}}
-        {{input}}
-      {{!/each}}
+      {{render "users"}}
     {{/if}}
     </script>
   </body>
